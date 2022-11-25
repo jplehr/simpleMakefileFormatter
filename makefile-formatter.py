@@ -2,7 +2,9 @@ import argparse
 import typing
 
 parser = argparse.ArgumentParser()
-parser.add_argument('filename', type=str, help='The name of the file to foramt')
+parser.add_argument('filename',
+                    type=str,
+                    help='The name of the file to foramt')
 parser.add_argument('outfile', type=str, help='The name of output file')
 
 indent_width = 2
@@ -10,15 +12,14 @@ whitespace_after_paren = False
 whitespace_before_paren = True
 whitespace_around_operator = True
 
-
 current_indent = 0
 
 indent_increaser = ['ifeq', 'ifneq']
 indent_decreaser = ['endif']
 indent_dec_inc = ['else', 'elif']
 
-
 rule_head_seen = False
+
 
 def indent_line(line: str) -> str:
     global current_indent
@@ -26,8 +27,9 @@ def indent_line(line: str) -> str:
     for i in range(0, current_indent):
         for j in range(0, indent_width):
             formatted_line = ' ' + formatted_line
-    
+
     return formatted_line
+
 
 def is_make_rule_head(line: str) -> bool:
     '''
@@ -36,23 +38,27 @@ def is_make_rule_head(line: str) -> bool:
     res = line.find(':')
     return res != -1
 
+
 def is_make_rule_body(line: str) -> bool:
     global rule_head_seen
     formatted_line = line.strip()
-    
+
     if len(formatted_line) == 0:
         rule_head_seen = False
         return False
-    
+
     if rule_head_seen:
         return True
+
 
 def format_rule(line: str) -> str:
     formatted_line = line.strip()
     return '\t' + formatted_line
 
+
 def format_rule_head(line: str) -> str:
     return line.strip()
+
 
 def format_non_rule(line: str) -> str:
     formatted_line = line.strip()
@@ -78,8 +84,9 @@ def format_non_rule(line: str) -> str:
             formatted_line = indent_line(formatted_line)
             current_indent = current_indent + 1
             return formatted_line
-    
+
     return indent_line(formatted_line)
+
 
 def read_file(file_name: str, outfile: str) -> None:
     global rule_head_seen
@@ -97,13 +104,13 @@ def read_file(file_name: str, outfile: str) -> None:
                 # print('Found rule head')
                 formatted_line = format_rule_head(cur_line)
                 rule_head_seen = True
-            
+
             else:
                 formatted_line = format_non_rule(cur_line)
-            
+
             formatted_content += formatted_line + '\n'
             print(formatted_line)
-    
+
     with open(outfile, 'w') as of:
         of.write(formatted_content)
 
